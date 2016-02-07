@@ -38,4 +38,4 @@ After running server you can send requests to picture-app REST API (in other ter
 ### Tests
 To execute tests run the next command in <code>manage.py</code> directory:
 
-    python3 manage.py tests
+    python3 manage.py test
