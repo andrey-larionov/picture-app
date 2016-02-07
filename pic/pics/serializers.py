@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    # Email field should be unique on User's set
     email = serializers.EmailField(
         required=True, 
         validators=[UniqueValidator(queryset=User.objects.all())]
@@ -14,6 +15,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'password')
         read_only_fields = ('id',)
+        # Don't show password to anyone
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -42,11 +44,13 @@ class PictureRateSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'id', 'rate', 'picture')
         user = serializers.Field(source='user.username')
 
+    # User can rate a picture once
     def unique_user_picture_validate(self, user, picture):
         picture_rate = PictureRate.objects.filter(user=user, picture=picture)
         if picture_rate:
             raise serializers.ValidationError("You are already voted this picture.")
 
+    # Rate value should be maximum 10 and minimum 1
     def range_validator(self, value):
         if value not in range(1, 11):
             raise serializers.ValidationError("Rate value should be in range 1 .. 10.")

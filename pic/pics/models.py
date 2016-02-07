@@ -6,14 +6,13 @@ from rest_framework.authtoken.models import Token
 from django.conf import settings
 
 # This code is triggered whenever a new user has been created and saved to the database
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
 def user_directory_path(instance, filename):
-    # image will be uploaded to MEDIA_ROOT/<id>/<filename>
+    # Image will be uploaded to MEDIA_ROOT/<id>/<filename>
     return '{0}/{1}'.format(instance.user.id, filename)
 
 class Picture(models.Model):
@@ -39,4 +38,5 @@ class PictureRate(models.Model):
     rate = models.PositiveSmallIntegerField(null=False)
 
     class Meta:
+        # Because one user can rate picture once
         unique_together = ('picture', 'user')
